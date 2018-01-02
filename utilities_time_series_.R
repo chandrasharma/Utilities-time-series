@@ -70,9 +70,9 @@ df3 <- fread("per_bill_code_mod_.csv", sep = ",", header = TRUE,stringsAsFactors
           #One Time series model per bill code
 
           #initialize a matrix
-          df.collect.mean = matrix(NA, nrow = 0, ncol = 2)
-          colnames(df.collect.mean) <- c("Billcode","Forecasted_Revenue_2013")
-          
+          df.collect.sum = matrix(NA, nrow = 0, ncol = 2)
+          colnames(df.collect.sum) <- c("Billcode","Forecasted_Revenue_2013")
+          k=1
           for(k in 1:length(Billcodes)){
             df.per.billcode <- df3[df3$Billcode==Billcodes[k],]
             ut <- ts(df.per.billcode$Revenue, frequency = 12, start=c(2004,3))
@@ -83,13 +83,13 @@ df3 <- fread("per_bill_code_mod_.csv", sep = ",", header = TRUE,stringsAsFactors
             plot(forecast(fit.aa,h=12)) #prints one forecast plot per bill code
             fcast <- forecast(fit.aa,h=12) #capture forecasted values
             fcast.mean <- as.data.frame(fcast$mean) #get the mean per month
-            fcast.rev.mean <- mean(fcast.mean$x) #take mean of 12 forecasted months - from june 2012 - May 2013
-            mean.fcast.mean <- cbind((Billcodes[k]),(fcast.rev.mean)) #arrange the forecasted values with the respective billcode
-            df.collect.mean <- rbind(df.collect.mean,mean.fcast.mean) #collect all the forecasts into one matrix
+            fcast.rev.sum <- sum(fcast.mean$x) #take sum of 12 forecasted months - from june 2012 - May 2013
+            sum.fcast.mean <- cbind((Billcodes[k]),(fcast.rev.sum)) #arrange the forecasted values with the respective billcode
+            df.collect.sum <- rbind(df.collect.sum,sum.fcast.mean) #collect all the forecasts into one matrix
             k = k + 1
           }
-          df.collect.mean <- as.data.frame(df.collect.mean) #convert the matric to data frame for export
+          df.collect.sum <- as.data.frame(df.collect.sum) #convert the matric to data frame for export
 
         
 #write the mean forecast per billcode table
-write.csv(df.collect.mean, "per_billcode_forecast.csv")
+write.csv(df.collect.sum, "per_billcode_forecast.csv")
